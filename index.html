@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AquaWise | Every Drop Matters</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+
+    :root {
+      --purple: #7864d9;
+      --blue: #59b9db;
+      --ink: #292741;
+      --muted: #79758c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "DM Sans", sans-serif;
+      background: #f8f8ff;
+      color: var(--ink);
+    }
+
+    nav, main, footer {
+      max-width: 1100px;
+      margin: auto;
+      padding: 24px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: 700;
+      color: var(--purple);
+      text-decoration: none;
+    }
+
+    nav a:last-child {
+      text-decoration: none;
+      color: var(--muted);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      align-items: center;
+      gap: 50px;
+      padding: 65px 0;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #ece8ff;
+      color: var(--purple);
+      border-radius: 30px;
+      padding: 9px 15px;
+      font-size: 12px;
+    }
+
+    h1 {
+      font-size: clamp(42px, 7vw, 76px);
+      letter-spacing: -3px;
+      line-height: 1.05;
+      margin: 24px 0;
+    }
+
+    h1 span { color: var(--purple); }
+
+    p {
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .button {
+      display: inline-block;
+      background: var(--purple);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 23px;
+      text-decoration: none;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .water-orb {
+      position: relative;
+      width: min(100%, 330px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: auto;
+      background: #eceaff;
+      border: 10px solid white;
+      box-shadow: 0 25px 70px #7864d930;
+    }
+
+    .water {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 65%;
+      background: linear-gradient(#8ccfec, #8274df);
+      transition: height .8s;
+    }
+
+    .water::before,
+    .water::after {
+      content: "";
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      left: 50%;
+      top: -570px;
+      background: #eceaff;
+      border-radius: 43%;
+      animation: wave 9s linear infinite;
+    }
+
+    .water::after {
+      opacity: .45;
+      border-radius: 40%;
+      animation-duration: 13s;
+    }
+
+    @keyframes wave {
+      from { transform: translateX(-50%) rotate(0); }
+      to { transform: translateX(-50%) rotate(360deg); }
+    }
+
+    .orb-label {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      text-align: center;
+      z-index: 1;
+    }
+
+    .orb-label strong {
+      font-size: 55px;
+      letter-spacing: -2px;
+    }
+
+    .orb-label span { font-size: 13px; }
+
+    .calculator {
+      background: white;
+      padding: 32px;
+      border: 1px solid #e9e5f4;
+      border-radius: 24px;
+      box-shadow: 0 15px 45px #42346c06;
+      scroll-margin-top: 25px;
+    }
+
+    h2 { margin-top: 0; }
+
+    .calculator-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 35px;
+    }
+
+    .field { margin: 23px 0; }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    output {
+      color: var(--purple);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--purple);
+    }
+
+    .result {
+      background: #f2efff;
+      border-radius: 18px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .result strong {
+      display: block;
+      font-size: 52px;
+      color: var(--purple);
+      letter-spacing: -2px;
+    }
+
+    .result small { color: var(--muted); }
+
+    .note {
+      font-size: 12px;
+      margin-bottom: 0;
+    }
+
+    .tips {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin: 35px 0;
+    }
+
+    .tip {
+      padding: 25px;
+      background: white;
+      border: 1px solid #e9e5f4;
+      border-radius: 18px;
+    }
+
+    .tip span { font-size: 28px; }
+    .tip h3 { font-size: 16px; }
+    .tip p { font-size: 13px; }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      border-top: 1px solid #e9e5f4;
+    }
+
+    :focus-visible {
+      outline: 3px solid #59b9db;
+      outline-offset: 5px;
+    }
+
+    @media (max-width: 700px) {
+      .hero, .calculator-grid { grid-template-columns: 1fr; }
+      .hero { padding: 30px 0; gap: 30px; }
+      .water-orb { width: 240px; }
+      .tips { grid-template-columns: 1fr; }
+      .calculator { padding: 22px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .water::before, .water::after { animation: none; }
+      .water { transition: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <a class="logo" href="#">◉ AquaWise</a>
+    <a href="#calculator">Explore your water use ↗</a>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div>
+        <span class="badge">SMALL CHANGES. LASTING IMPACT.</span>
+        <h1>A better future.<br><span>One drop at a time.</span></h1>
+        <p>
+          Discover how everyday habits use water.
+          Explore simple changes and see how much you could save.
+        </p>
+        <a class="button" href="#calculator">Calculate my water use →</a>
+      </div>
+
+      <div class="water-orb" aria-hidden="true">
+        <div class="water" id="water"></div>
+        <div class="orb-label">
+          <strong id="orbTotal">0</strong>
+          <span>estimated liters / day</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="calculator" id="calculator">
+      <h2>Your daily water footprint</h2>
+      <p>Adjust these habits to estimate water use for the activities below.</p>
+
+      <div class="calculator-grid">
+        <div>
+          <div class="field">
+            <label for="shower">
+              Daily shower time
+              <output id="showerValue" for="shower"></output>
+            </label>
+            <input id="shower" type="range" min="0" max="30" value="8">
+          </div>
+
+          <div class="field">
+            <label for="flow">
+              Shower flow rate
+              <output id="flowValue" for="flow"></output>
+            </label>
+            <input id="flow" type="range" min="1" max="20" value="9">
+          </div>
+
+          <div class="field">
+            <label for="tap">
+              Daily running-tap time
+              <output id="tapValue" for="tap"></output>
+            </label>
+            <input id="tap" type="range" min="0" max="30" value="5">
+          </div>
+
+          <div class="field">
+            <label for="laundry">
+              Laundry loads per week
+              <output id="laundryValue" for="laundry"></output>
+            </label>
+            <input id="laundry" type="range" min="0" max="14" value="3">
+          </div>
+
+          <button class="button" id="reset" type="button">Reset values</button>
+        </div>
+
+        <div class="result" aria-live="polite" aria-atomic="true">
+          <span>Estimated daily use</span>
+          <strong><span id="total">0</span> L</strong>
+          <small>For the selected activities only</small>
+
+          <p id="saving"></p>
+
+          <p class="note">
+            Illustration assumptions: tap flow = 6 L/min;
+            laundry = 50 L/load. Actual use varies by equipment.
+            This excludes toilets, food, drinking water, and other uses.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="tips" aria-label="Water-saving ideas">
+      <article class="tip">
+        <span aria-hidden="true">🚿</span>
+        <h3>Make showers shorter</h3>
+        <p>Try reducing your shower by two minutes and compare the estimate.</p>
+      </article>
+
+      <article class="tip">
+        <span aria-hidden="true">💧</span>
+        <h3>Turn off the tap</h3>
+        <p>Pause running water while brushing your teeth or soaping your hands.</p>
+      </article>
+
+      <article class="tip">
+        <span aria-hidden="true">🧺</span>
+        <h3>Wash full loads</h3>
+        <p>Combine smaller laundry loads when your machine’s capacity allows.</p>
+      </article>
+    </section>
+  </main>
+
+  <footer>AquaWise · Every drop has a purpose.</footer>
+
+  <script>
+    const ids = ["shower", "flow", "tap", "laundry"];
+    const defaults = [8, 9, 5, 3];
+    const get = id => document.getElementById(id);
+
+    function update() {
+      const [shower, flow, tap, laundry] =
+        ids.map(id => Number(get(id).value));
+
+      get("showerValue").textContent = `${shower} min`;
+      get("flowValue").textContent = `${flow} L/min`;
+      get("tapValue").textContent = `${tap} min`;
+      get("laundryValue").textContent = `${laundry} loads`;
+
+      const daily = shower * flow + tap * 6 + laundry * 50 / 7;
+      const saved = Math.min(2, shower) * flow;
+
+      get("total").textContent = Math.round(daily);
+      get("orbTotal").textContent = Math.round(daily);
+
+      // Decorative fill level, not a conservation score.
+      get("water").style.height =
+        `${Math.min(88, 25 + daily / 6)}%`;
+
+      get("saving").textContent = saved > 0
+        ? `A ${Math.min(2, shower)}-minute shorter shower at this flow rate
+           could save about ${saved} liters each day,
+           or ${Math.round(saved * 30)} liters over 30 days.`
+        : "Move a slider to explore how your habits change water use.";
+    }
+
+    ids.forEach(id => get(id).addEventListener("input", update));
+
+    get("reset").addEventListener("click", () => {
+      ids.forEach((id, index) => get(id).value = defaults[index]);
+      update();
+    });
+
+    update();
+  </script>
+</body>
+</html>
