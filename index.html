@@ -1,409 +1,892 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AquaWise | Every Drop Matters</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AquaWise — Water Conservation Dashboard</title>
 
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+<style>
+  :root {
+    --bg:#f8f7ff;
+    --card:#ffffff;
+    --ink:#292741;
+    --muted:#817b95;
+    --purple:#7963d9;
+    --blue:#61badb;
+    --line:#e9e5f4;
+    --soft:#f0ecff;
+  }
 
-    :root {
-      --purple: #7864d9;
-      --blue: #59b9db;
-      --ink: #292741;
-      --muted: #79758c;
+  * { box-sizing:border-box; }
+
+  body {
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font:15px/1.6 system-ui,sans-serif;
+  }
+
+  button,input,select { font:inherit; }
+
+  button,a,input { -webkit-tap-highlight-color:transparent; }
+
+  button {
+    cursor:pointer;
+    border:0;
+    border-radius:12px;
+    padding:12px 18px;
+    background:var(--purple);
+    color:white;
+    font-weight:600;
+  }
+
+  button:hover { filter:brightness(.96); }
+
+  button.secondary {
+    background:var(--soft);
+    color:var(--purple);
+  }
+
+  :focus-visible {
+    outline:3px solid var(--blue);
+    outline-offset:4px;
+  }
+
+  nav,main,footer {
+    max-width:1120px;
+    margin:auto;
+    padding:24px;
+  }
+
+  nav {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+  }
+
+  .logo {
+    color:var(--purple);
+    text-decoration:none;
+    font-size:26px;
+    font-weight:800;
+    letter-spacing:-1px;
+  }
+
+  nav span { color:var(--muted);font-size:12px; }
+
+  .hero {
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:40px;
+    align-items:center;
+    padding:45px 0;
+  }
+
+  .badge {
+    display:inline-block;
+    border-radius:30px;
+    background:var(--soft);
+    color:var(--purple);
+    padding:7px 13px;
+    font-size:11px;
+    letter-spacing:1px;
+  }
+
+  h1 {
+    font-size:clamp(40px,6vw,68px);
+    line-height:1.08;
+    letter-spacing:-3px;
+    margin:20px 0;
+  }
+
+  h1 span { color:var(--purple); }
+
+  h2 { font-size:20px;margin:0 0 8px; }
+  h3 { margin:0 0 10px;font-size:15px; }
+
+  p { color:var(--muted); }
+
+  .orb {
+    width:260px;
+    aspect-ratio:1;
+    margin:auto;
+    border:9px solid white;
+    border-radius:50%;
+    overflow:hidden;
+    position:relative;
+    background:#eeeaff;
+    box-shadow:0 25px 60px #7963d924;
+  }
+
+  .water {
+    position:absolute;
+    inset:auto 0 0;
+    height:60%;
+    background:linear-gradient(#86cee7,#8a77df);
+    transition:height .6s;
+  }
+
+  .water::before {
+    content:"";
+    position:absolute;
+    width:500px;
+    height:500px;
+    left:50%;
+    top:-475px;
+    background:#eeeaff;
+    border-radius:43%;
+    animation:wave 10s linear infinite;
+  }
+
+  @keyframes wave {
+    from { transform:translateX(-50%) rotate(0); }
+    to { transform:translateX(-50%) rotate(360deg); }
+  }
+
+  .orb-content {
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-content:center;
+    text-align:center;
+  }
+
+  .orb-content strong { font-size:49px;letter-spacing:-2px; }
+  .orb-content span { font-size:12px; }
+
+  .stats {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:24px;
+  }
+
+  .stat,.card {
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:24px;
+  }
+
+  .stat small { color:var(--muted);font-size:11px; }
+
+  .stat strong {
+    display:block;
+    color:var(--purple);
+    font-size:27px;
+    margin-top:8px;
+    overflow-wrap:anywhere;
+  }
+
+  .layout {
+    display:grid;
+    grid-template-columns:1.2fr 1fr;
+    gap:22px;
+    align-items:start;
+  }
+
+  .card { margin-bottom:22px; }
+
+  .description {
+    font-size:12px;
+    margin:0 0 24px;
+  }
+
+  .field { margin:23px 0; }
+
+  .range-label {
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:10px;
+    font-size:13px;
+  }
+
+  output {
+    color:var(--purple);
+    font-weight:700;
+    white-space:nowrap;
+  }
+
+  input[type="range"] {
+    width:100%;
+    accent-color:var(--purple);
+  }
+
+  .form-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+  }
+
+  .form-grid label {
+    font-size:12px;
+    color:var(--muted);
+  }
+
+  input[type="number"],select {
+    width:100%;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:11px;
+    color:var(--ink);
+    margin-top:7px;
+  }
+
+  .actions {
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:23px;
+  }
+
+  .breakdown-row { margin:18px 0; }
+
+  .breakdown-label {
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    font-size:12px;
+    margin-bottom:7px;
+  }
+
+  .track {
+    height:9px;
+    background:var(--soft);
+    border-radius:10px;
+    overflow:hidden;
+  }
+
+  .bar {
+    height:100%;
+    border-radius:10px;
+    transition:width .4s;
+  }
+
+  .goal-card { background:var(--soft); }
+
+  .goal-card input { background:white; }
+
+  .goal-track {
+    height:12px;
+    border-radius:12px;
+    overflow:hidden;
+    background:#ddd6f8;
+    margin:20px 0 10px;
+  }
+
+  #goalBar {
+    height:100%;
+    background:var(--purple);
+    transition:width .4s;
+  }
+
+  .small { font-size:11px;color:var(--muted); }
+
+  .tip-box {
+    background:var(--bg);
+    border-radius:14px;
+    padding:18px;
+    margin-top:15px;
+  }
+
+  .tip-box p { margin:0;font-size:13px; }
+
+  .note {
+    border-top:1px solid var(--line);
+    padding-top:17px;
+    margin-top:22px;
+    font-size:11px;
+  }
+
+  #status {
+    min-height:22px;
+    font-size:12px;
+    color:var(--purple);
+    margin:12px 0;
+  }
+
+  footer {
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+    border-top:1px solid var(--line);
+  }
+
+  @media(max-width:850px) {
+    .stats { grid-template-columns:repeat(2,1fr); }
+    .layout { grid-template-columns:1fr; }
+    .hero { gap:20px; }
+    .orb { width:220px; }
+  }
+
+  @media(max-width:560px) {
+    nav,main,footer { padding:18px; }
+    .hero { grid-template-columns:1fr;padding:25px 0; }
+    .orb { width:200px;margin:5px auto 20px; }
+    .stat,.card { padding:19px; }
+    .stat strong { font-size:23px; }
+    nav span { font-size:10px; }
+    .form-grid { grid-template-columns:1fr; }
+  }
+
+  @media(prefers-reduced-motion:reduce) {
+    *,*::before,*::after {
+      animation:none !important;
+      transition:none !important;
     }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: "DM Sans", sans-serif;
-      background: #f8f8ff;
-      color: var(--ink);
-    }
-
-    nav, main, footer {
-      max-width: 1100px;
-      margin: auto;
-      padding: 24px;
-    }
-
-    nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .logo {
-      font-size: 25px;
-      font-weight: 700;
-      color: var(--purple);
-      text-decoration: none;
-    }
-
-    nav a:last-child {
-      text-decoration: none;
-      color: var(--muted);
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      align-items: center;
-      gap: 50px;
-      padding: 65px 0;
-    }
-
-    .badge {
-      display: inline-block;
-      background: #ece8ff;
-      color: var(--purple);
-      border-radius: 30px;
-      padding: 9px 15px;
-      font-size: 12px;
-    }
-
-    h1 {
-      font-size: clamp(42px, 7vw, 76px);
-      letter-spacing: -3px;
-      line-height: 1.05;
-      margin: 24px 0;
-    }
-
-    h1 span { color: var(--purple); }
-
-    p {
-      color: var(--muted);
-      line-height: 1.8;
-    }
-
-    .button {
-      display: inline-block;
-      background: var(--purple);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 14px 23px;
-      text-decoration: none;
-      cursor: pointer;
-      font: inherit;
-    }
-
-    .water-orb {
-      position: relative;
-      width: min(100%, 330px);
-      aspect-ratio: 1;
-      border-radius: 50%;
-      overflow: hidden;
-      margin: auto;
-      background: #eceaff;
-      border: 10px solid white;
-      box-shadow: 0 25px 70px #7864d930;
-    }
-
-    .water {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 65%;
-      background: linear-gradient(#8ccfec, #8274df);
-      transition: height .8s;
-    }
-
-    .water::before,
-    .water::after {
-      content: "";
-      position: absolute;
-      width: 600px;
-      height: 600px;
-      left: 50%;
-      top: -570px;
-      background: #eceaff;
-      border-radius: 43%;
-      animation: wave 9s linear infinite;
-    }
-
-    .water::after {
-      opacity: .45;
-      border-radius: 40%;
-      animation-duration: 13s;
-    }
-
-    @keyframes wave {
-      from { transform: translateX(-50%) rotate(0); }
-      to { transform: translateX(-50%) rotate(360deg); }
-    }
-
-    .orb-label {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-content: center;
-      text-align: center;
-      z-index: 1;
-    }
-
-    .orb-label strong {
-      font-size: 55px;
-      letter-spacing: -2px;
-    }
-
-    .orb-label span { font-size: 13px; }
-
-    .calculator {
-      background: white;
-      padding: 32px;
-      border: 1px solid #e9e5f4;
-      border-radius: 24px;
-      box-shadow: 0 15px 45px #42346c06;
-      scroll-margin-top: 25px;
-    }
-
-    h2 { margin-top: 0; }
-
-    .calculator-grid {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr;
-      gap: 35px;
-    }
-
-    .field { margin: 23px 0; }
-
-    label {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      font-size: 14px;
-      margin-bottom: 12px;
-    }
-
-    output {
-      color: var(--purple);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--purple);
-    }
-
-    .result {
-      background: #f2efff;
-      border-radius: 18px;
-      padding: 28px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .result strong {
-      display: block;
-      font-size: 52px;
-      color: var(--purple);
-      letter-spacing: -2px;
-    }
-
-    .result small { color: var(--muted); }
-
-    .note {
-      font-size: 12px;
-      margin-bottom: 0;
-    }
-
-    .tips {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      margin: 35px 0;
-    }
-
-    .tip {
-      padding: 25px;
-      background: white;
-      border: 1px solid #e9e5f4;
-      border-radius: 18px;
-    }
-
-    .tip span { font-size: 28px; }
-    .tip h3 { font-size: 16px; }
-    .tip p { font-size: 13px; }
-
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-      border-top: 1px solid #e9e5f4;
-    }
-
-    :focus-visible {
-      outline: 3px solid #59b9db;
-      outline-offset: 5px;
-    }
-
-    @media (max-width: 700px) {
-      .hero, .calculator-grid { grid-template-columns: 1fr; }
-      .hero { padding: 30px 0; gap: 30px; }
-      .water-orb { width: 240px; }
-      .tips { grid-template-columns: 1fr; }
-      .calculator { padding: 22px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .water::before, .water::after { animation: none; }
-      .water { transition: none; }
-    }
-  </style>
+  }
+</style>
 </head>
 
 <body>
-  <nav>
-    <a class="logo" href="#">◉ AquaWise</a>
-    <a href="#calculator">Explore your water use ↗</a>
-  </nav>
+<nav>
+  <a class="logo" href="#">◉ AquaWise</a>
+  <span>MAKE EVERY DROP COUNT</span>
+</nav>
 
-  <main>
-    <section class="hero">
-      <div>
-        <span class="badge">SMALL CHANGES. LASTING IMPACT.</span>
-        <h1>A better future.<br><span>One drop at a time.</span></h1>
-        <p>
-          Discover how everyday habits use water.
-          Explore simple changes and see how much you could save.
+<main>
+  <section class="hero">
+    <div>
+      <span class="badge">YOUR WATER. YOUR IMPACT.</span>
+      <h1>Small habits.<br><span>A better tomorrow.</span></h1>
+      <p>
+        Explore your household’s water use, compare a saving scenario,
+        and estimate the impact on your monthly bill.
+      </p>
+    </div>
+
+    <div class="orb" aria-hidden="true">
+      <div class="water" id="water"></div>
+      <div class="orb-content">
+        <strong id="orbTotal">0</strong>
+        <span>household liters / day</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="Estimated water use">
+    <div class="stat">
+      <small>HOUSEHOLD / DAY</small>
+      <strong id="dailyStat">0 L</strong>
+    </div>
+    <div class="stat">
+      <small>HOUSEHOLD / 30 DAYS</small>
+      <strong id="monthlyStat">0 L</strong>
+    </div>
+    <div class="stat">
+      <small>ESTIMATED 30-DAY COST</small>
+      <strong id="costStat">0</strong>
+    </div>
+    <div class="stat">
+      <small>POTENTIAL DAILY SAVINGS</small>
+      <strong id="savingStat">0 L</strong>
+    </div>
+  </section>
+
+  <div class="layout">
+    <section class="card">
+      <h2>Build your household estimate</h2>
+      <p class="description">
+        Shower and tap minutes are per person.
+        Laundry loads are for the whole household.
+      </p>
+
+      <div class="form-grid">
+        <label for="people">
+          People in household
+          <input id="people" type="number" min="1" max="30" step="1" value="2">
+        </label>
+
+        <label for="rate">
+          Water price per 1,000 liters
+          <input id="rate" type="number" min="0" max="1000000"
+                 step="0.01" value="0">
+        </label>
+
+        <label for="currency">
+          Currency
+          <select id="currency">
+            <option value="ETB">ETB — Ethiopian birr</option>
+            <option value="USD">USD — US dollar</option>
+            <option value="EUR">EUR — Euro</option>
+            <option value="GBP">GBP — British pound</option>
+          </select>
+        </label>
+
+        <label for="laundryLiters">
+          Liters per laundry load
+          <input id="laundryLiters" type="number"
+                 min="1" max="300" step="1" value="50">
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="range-label" for="shower">
+          Shower minutes / person / day
+          <output id="showerValue" for="shower"></output>
+        </label>
+        <input id="shower" type="range" min="0" max="30" value="8">
+      </div>
+
+      <div class="field">
+        <label class="range-label" for="flow">
+          Shower flow rate
+          <output id="flowValue" for="flow"></output>
+        </label>
+        <input id="flow" type="range" min="1" max="20" value="9">
+      </div>
+
+      <div class="field">
+        <label class="range-label" for="tap">
+          Running-tap minutes / person / day
+          <output id="tapValue" for="tap"></output>
+        </label>
+        <input id="tap" type="range" min="0" max="30" value="5">
+      </div>
+
+      <div class="field">
+        <label class="range-label" for="tapFlow">
+          Tap flow rate
+          <output id="tapFlowValue" for="tapFlow"></output>
+        </label>
+        <input id="tapFlow" type="range" min="1" max="20" value="6">
+      </div>
+
+      <div class="field">
+        <label class="range-label" for="laundry">
+          Household laundry loads / week
+          <output id="laundryValue" for="laundry"></output>
+        </label>
+        <input id="laundry" type="range" min="0" max="21" value="3">
+      </div>
+
+      <div class="actions">
+        <button id="export" type="button">↓ Export CSV report</button>
+        <button id="reset" class="secondary" type="button">Reset settings</button>
+      </div>
+
+      <p id="status" role="status" aria-live="polite"></p>
+
+      <p class="note">
+        Enter the unit price from your own water bill. The default price is
+        zero until you set it. Estimates exclude fixed fees, tiered tariffs,
+        taxes, wastewater charges, and activities not listed here.
+        Settings are saved in this browser when storage is available.
+      </p>
+    </section>
+
+    <div>
+      <section class="card">
+        <h2>Where your water goes</h2>
+        <p class="description">Estimated share of the selected activities.</p>
+        <div id="breakdown"></div>
+        <p id="perPerson" class="small"></p>
+      </section>
+
+      <section class="card goal-card">
+        <h2>Try a saving scenario</h2>
+        <p class="description">
+          Compare your current inputs with shorter shower and tap times.
         </p>
-        <a class="button" href="#calculator">Calculate my water use →</a>
-      </div>
 
-      <div class="water-orb" aria-hidden="true">
-        <div class="water" id="water"></div>
-        <div class="orb-label">
-          <strong id="orbTotal">0</strong>
-          <span>estimated liters / day</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="calculator" id="calculator">
-      <h2>Your daily water footprint</h2>
-      <p>Adjust these habits to estimate water use for the activities below.</p>
-
-      <div class="calculator-grid">
-        <div>
-          <div class="field">
-            <label for="shower">
-              Daily shower time
-              <output id="showerValue" for="shower"></output>
-            </label>
-            <input id="shower" type="range" min="0" max="30" value="8">
-          </div>
-
-          <div class="field">
-            <label for="flow">
-              Shower flow rate
-              <output id="flowValue" for="flow"></output>
-            </label>
-            <input id="flow" type="range" min="1" max="20" value="9">
-          </div>
-
-          <div class="field">
-            <label for="tap">
-              Daily running-tap time
-              <output id="tapValue" for="tap"></output>
-            </label>
-            <input id="tap" type="range" min="0" max="30" value="5">
-          </div>
-
-          <div class="field">
-            <label for="laundry">
-              Laundry loads per week
-              <output id="laundryValue" for="laundry"></output>
-            </label>
-            <input id="laundry" type="range" min="0" max="14" value="3">
-          </div>
-
-          <button class="button" id="reset" type="button">Reset values</button>
+        <div class="field">
+          <label class="range-label" for="showerCut">
+            Reduce shower time / person
+            <output id="showerCutValue" for="showerCut"></output>
+          </label>
+          <input id="showerCut" type="range" min="0" max="10" value="2">
         </div>
 
-        <div class="result" aria-live="polite" aria-atomic="true">
-          <span>Estimated daily use</span>
-          <strong><span id="total">0</span> L</strong>
-          <small>For the selected activities only</small>
-
-          <p id="saving"></p>
-
-          <p class="note">
-            Illustration assumptions: tap flow = 6 L/min;
-            laundry = 50 L/load. Actual use varies by equipment.
-            This excludes toilets, food, drinking water, and other uses.
-          </p>
+        <div class="field">
+          <label class="range-label" for="tapCut">
+            Reduce running-tap time / person
+            <output id="tapCutValue" for="tapCut"></output>
+          </label>
+          <input id="tapCut" type="range" min="0" max="10" value="1">
         </div>
-      </div>
-    </section>
 
-    <section class="tips" aria-label="Water-saving ideas">
-      <article class="tip">
-        <span aria-hidden="true">🚿</span>
-        <h3>Make showers shorter</h3>
-        <p>Try reducing your shower by two minutes and compare the estimate.</p>
-      </article>
+        <label for="goal">
+          Monthly household saving goal in liters
+          <input id="goal" type="number" min="1" max="10000000"
+                 step="1" value="1000">
+        </label>
 
-      <article class="tip">
-        <span aria-hidden="true">💧</span>
-        <h3>Turn off the tap</h3>
-        <p>Pause running water while brushing your teeth or soaping your hands.</p>
-      </article>
+        <div class="goal-track"
+             id="goalProgress"
+             role="progressbar"
+             aria-label="Projected share of monthly saving goal"
+             aria-valuemin="0"
+             aria-valuemax="100"
+             aria-valuenow="0">
+          <div id="goalBar"></div>
+        </div>
 
-      <article class="tip">
-        <span aria-hidden="true">🧺</span>
-        <h3>Wash full loads</h3>
-        <p>Combine smaller laundry loads when your machine’s capacity allows.</p>
-      </article>
-    </section>
-  </main>
+        <p id="goalText" class="small" aria-live="polite"></p>
+        <p id="scenarioText"></p>
+        <p class="small">
+          These are projected savings from a scenario, not recorded savings.
+          Monthly calculations use 30 days.
+        </p>
+      </section>
 
-  <footer>AquaWise · Every drop has a purpose.</footer>
+      <section class="card">
+        <h2>Your next small step</h2>
+        <div class="tip-box">
+          <p id="tipText"></p>
+        </div>
+        <div class="actions">
+          <button id="nextTip" class="secondary" type="button">Another idea ↻</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
 
-  <script>
-    const ids = ["shower", "flow", "tap", "laundry"];
-    const defaults = [8, 9, 5, 3];
-    const get = id => document.getElementById(id);
+<footer>
+  AquaWise · Estimates for awareness, not a substitute for meter readings.
+</footer>
 
-    function update() {
-      const [shower, flow, tap, laundry] =
-        ids.map(id => Number(get(id).value));
+<script>
+  "use strict";
 
-      get("showerValue").textContent = `${shower} min`;
-      get("flowValue").textContent = `${flow} L/min`;
-      get("tapValue").textContent = `${tap} min`;
-      get("laundryValue").textContent = `${laundry} loads`;
+  const $ = id => document.getElementById(id);
+  const STORAGE_KEY = "aquawise-settings-v2";
 
-      const daily = shower * flow + tap * 6 + laundry * 50 / 7;
-      const saved = Math.min(2, shower) * flow;
+  const defaults = {
+    people: 2,
+    rate: 0,
+    currency: "ETB",
+    laundryLiters: 50,
+    shower: 8,
+    flow: 9,
+    tap: 5,
+    tapFlow: 6,
+    laundry: 3,
+    showerCut: 2,
+    tapCut: 1,
+    goal: 1000
+  };
 
-      get("total").textContent = Math.round(daily);
-      get("orbTotal").textContent = Math.round(daily);
+  const numericIds = Object.keys(defaults).filter(id => id !== "currency");
 
-      // Decorative fill level, not a conservation score.
-      get("water").style.height =
-        `${Math.min(88, 25 + daily / 6)}%`;
+  const numberFormat = new Intl.NumberFormat(undefined, {
+    maximumFractionDigits: 1
+  });
 
-      get("saving").textContent = saved > 0
-        ? `A ${Math.min(2, shower)}-minute shorter shower at this flow rate
-           could save about ${saved} liters each day,
-           or ${Math.round(saved * 30)} liters over 30 days.`
-        : "Move a slider to explore how your habits change water use.";
+  const tips = [
+    "Turn off the tap while brushing your teeth. Use the tap-time slider to explore the difference.",
+    "Try a shorter shower. Reduce your current shower time gradually and compare the estimate.",
+    "Run full laundry loads when your machine’s capacity and care instructions allow.",
+    "Check taps and visible pipework for leaks. Meter readings can help you investigate unexpected consumption.",
+    "Measure flow with a container: liters collected ÷ collection seconds × 60 gives liters per minute.",
+    "Choose an appropriate wash program and compare your machine’s stated water use per cycle.",
+    "Keep a record of actual meter readings to compare your estimate with measured household use."
+  ];
+
+  let tipIndex = 0;
+  let current = null;
+
+  function format(value) {
+    return numberFormat.format(value);
+  }
+
+  function money(value, currency) {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency,
+      maximumFractionDigits: 2
+    }).format(value);
+  }
+
+  function readNumber(id) {
+    const input = $(id);
+    let value = Number(input.value);
+
+    if (input.value.trim() === "" || !Number.isFinite(value)) {
+      value = defaults[id];
     }
 
-    ids.forEach(id => get(id).addEventListener("input", update));
+    value = Math.max(Number(input.min), Math.min(Number(input.max), value));
 
-    get("reset").addEventListener("click", () => {
-      ids.forEach((id, index) => get(id).value = defaults[index]);
-      update();
+    if (input.step === "1") {
+      value = Math.round(value);
+    }
+
+    input.value = value;
+    return value;
+  }
+
+  function getSettings() {
+    const settings = {};
+
+    numericIds.forEach(id => {
+      settings[id] = readNumber(id);
     });
 
-    update();
-  </script>
+    settings.currency = $("currency").value;
+    return settings;
+  }
+
+  function calculate(s) {
+    const shower = s.people * s.shower * s.flow;
+    const tap = s.people * s.tap * s.tapFlow;
+    const laundry = s.laundry * s.laundryLiters / 7;
+
+    const daily = shower + tap + laundry;
+    const monthly = daily * 30;
+
+    const actualShowerCut = Math.min(s.showerCut, s.shower);
+    const actualTapCut = Math.min(s.tapCut, s.tap);
+
+    const dailySaved = s.people * (
+      actualShowerCut * s.flow +
+      actualTapCut * s.tapFlow
+    );
+
+    const monthlySaved = dailySaved * 30;
+
+    return {
+      shower,
+      tap,
+      laundry,
+      daily,
+      monthly,
+      dailySaved,
+      monthlySaved,
+      scenarioDaily: Math.max(0, daily - dailySaved),
+      monthlyCost: monthly / 1000 * s.rate,
+      moneySaved: monthlySaved / 1000 * s.rate,
+      actualShowerCut,
+      actualTapCut
+    };
+  }
+
+  function saveSettings(settings) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    } catch {
+      // The calculator still works if browser storage is unavailable.
+    }
+  }
+
+  function restoreSettings() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+
+      const saved = JSON.parse(raw);
+
+      if (!saved || typeof saved !== "object") return;
+
+      numericIds.forEach(id => {
+        if (typeof saved[id] === "number" && Number.isFinite(saved[id])) {
+          $(id).value = saved[id];
+        }
+      });
+
+      if (["ETB", "USD", "EUR", "GBP"].includes(saved.currency)) {
+        $("currency").value = saved.currency;
+      }
+    } catch {
+      // Invalid or unavailable saved data falls back to defaults.
+    }
+  }
+
+  function render() {
+    const s = getSettings();
+    const r = calculate(s);
+    current = { settings: s, results: r };
+
+    $("showerValue").textContent = `${s.shower} min`;
+    $("flowValue").textContent = `${s.flow} L/min`;
+    $("tapValue").textContent = `${s.tap} min`;
+    $("tapFlowValue").textContent = `${s.tapFlow} L/min`;
+    $("laundryValue").textContent = `${s.laundry} loads`;
+
+    $("showerCutValue").textContent = `${r.actualShowerCut} min effective`;
+    $("tapCutValue").textContent = `${r.actualTapCut} min effective`;
+
+    $("dailyStat").textContent = `${format(r.daily)} L`;
+    $("monthlyStat").textContent = `${format(r.monthly)} L`;
+    $("costStat").textContent = money(r.monthlyCost, s.currency);
+    $("savingStat").textContent = `${format(r.dailySaved)} L`;
+    $("orbTotal").textContent = format(r.daily);
+
+    // Decorative level only; not a sustainability rating.
+    $("water").style.height =
+      `${Math.min(88, 30 + r.daily / 15)}%`;
+
+    const categories = [
+      { label: "Showers", amount: r.shower, color: "#7963d9" },
+      { label: "Running taps", amount: r.tap, color: "#61badb" },
+      { label: "Laundry · daily average", amount: r.laundry, color: "#afa0e9" }
+    ];
+
+    $("breakdown").replaceChildren();
+
+    categories.forEach(category => {
+      const percentage = r.daily > 0
+        ? category.amount / r.daily * 100
+        : 0;
+
+      const row = document.createElement("div");
+      row.className = "breakdown-row";
+
+      const label = document.createElement("div");
+      label.className = "breakdown-label";
+
+      const name = document.createElement("span");
+      name.textContent = category.label;
+
+      const value = document.createElement("span");
+      value.textContent =
+        `${format(category.amount)} L · ${format(percentage)}%`;
+
+      label.append(name, value);
+
+      const track = document.createElement("div");
+      track.className = "track";
+      track.setAttribute("aria-hidden", "true");
+
+      const bar = document.createElement("div");
+      bar.className = "bar";
+      bar.style.width = `${percentage}%`;
+      bar.style.background = category.color;
+
+      track.append(bar);
+      row.append(label, track);
+      $("breakdown").append(row);
+    });
+
+    $("perPerson").textContent =
+      `Household total divided by ${s.people}: ` +
+      `${format(r.daily / s.people)} L per person per day ` +
+      `for these activities, including an equal share of laundry.`;
+
+    const goalPercent = r.monthlySaved / s.goal * 100;
+    const cappedPercent = Math.max(0, Math.min(100, goalPercent));
+
+    $("goalBar").style.width = `${cappedPercent}%`;
+    $("goalProgress").setAttribute(
+      "aria-valuenow",
+      Math.round(cappedPercent)
+    );
+
+    $("goalProgress").setAttribute(
+      "aria-valuetext",
+      `${format(r.monthlySaved)} liters projected, ` +
+      `${format(goalPercent)} percent of the saving goal`
+    );
+
+    $("goalText").textContent =
+      `${format(r.monthlySaved)} L projected / ` +
+      `${format(s.goal)} L goal · ${format(goalPercent)}%`;
+
+    $("scenarioText").textContent =
+      `This scenario lowers the estimated household use to ` +
+      `${format(r.scenarioDaily)} L/day. ` +
+      `At your entered unit price, the estimated 30-day cost reduction is ` +
+      `${money(r.moneySaved, s.currency)}.`;
+
+    saveSettings(s);
+  }
+
+  function showTip() {
+    $("tipText").textContent = tips[tipIndex];
+  }
+
+  function csvCell(value) {
+    return `"${String(value).replace(/"/g, '""')}"`;
+  }
+
+  function exportCSV() {
+    render();
+
+    const { settings: s, results: r } = current;
+
+    const rows = [
+      ["AquaWise water-use estimate", "Value", "Unit"],
+      ["Export date", new Date().toISOString(), "ISO timestamp"],
+      ["Household size", s.people, "people"],
+      ["Daily shower time per person", s.shower, "minutes"],
+      ["Shower flow", s.flow, "L/min"],
+      ["Daily tap time per person", s.tap, "minutes"],
+      ["Tap flow", s.tapFlow, "L/min"],
+      ["Weekly household laundry", s.laundry, "loads"],
+      ["Water per laundry load", s.laundryLiters, "L"],
+      ["Entered unit price", s.rate, `${s.currency}/1000 L`],
+      ["Showers per day", r.shower.toFixed(2), "L"],
+      ["Taps per day", r.tap.toFixed(2), "L"],
+      ["Laundry daily average", r.laundry.toFixed(2), "L"],
+      ["Household daily estimate", r.daily.toFixed(2), "L"],
+      ["Household 30-day estimate", r.monthly.toFixed(2), "L"],
+      ["Estimated 30-day cost", r.monthlyCost.toFixed(2), s.currency],
+      ["Effective shower reduction per person", r.actualShowerCut, "minutes/day"],
+      ["Effective tap reduction per person", r.actualTapCut, "minutes/day"],
+      ["Projected daily savings", r.dailySaved.toFixed(2), "L"],
+      ["Projected 30-day savings", r.monthlySaved.toFixed(2), "L"],
+      ["Monthly saving goal", s.goal, "L"],
+      ["Projected 30-day cost reduction", r.moneySaved.toFixed(2), s.currency],
+      ["Scope", "Selected activities only; estimates are not meter readings.", ""],
+      ["Billing exclusions", "Fixed fees, tiered tariffs, taxes and wastewater charges.", ""]
+    ];
+
+    const csv = "\uFEFF" + rows
+      .map(row => row.map(csvCell).join(","))
+      .join("\r\n");
+
+    const blob = new Blob([csv], {
+      type: "text/csv;charset=utf-8"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "aquawise-water-report.csv";
+
+    document.body.append(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    $("status").textContent = "Your CSV report has been downloaded.";
+  }
+
+  numericIds.forEach(id => {
+    const input = $(id);
+
+    // Number fields update after entry so partial values are not overwritten.
+    input.addEventListener(
+      input.type === "range" ? "input" : "change",
+      render
+    );
+  });
+
+  $("currency").addEventListener("change", render);
+
+  $("nextTip").addEventListener("click", () => {
+    tipIndex = (tipIndex + 1) % tips.length;
+    showTip();
+  });
+
+  $("export").addEventListener("click", exportCSV);
+
+  $("reset").addEventListener("click", () => {
+    Object.entries(defaults).forEach(([id, value]) => {
+      $(id).value = value;
+    });
+
+    render();
+    $("status").textContent = "Settings reset to the starting values.";
+  });
+
+  restoreSettings();
+  render();
+  showTip();
+</script>
 </body>
 </html>
